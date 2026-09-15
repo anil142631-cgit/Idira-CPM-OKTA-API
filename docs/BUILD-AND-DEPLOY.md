@@ -108,9 +108,23 @@ Verification periodic (keeps the token alive); Reconciliation automatic when uns
 
 Plugin log: `lab-evidence/plugin-log-2026-09-18.log` (`Logs\ThirdParty\Debug_OktaUsersApiToken*.log` on the CPM).
 
-## 8. Operations
+## 8. Token account platform (same DLL)
 
-- **Token rotation** is manual by Okta design (no create/rotate API): create a new token as the service admin →
-  PVWA Change > specify next password on the token account → Verify a managed account → revoke the old token.
-- **Keep-alive**: periodic Verify on managed accounts uses the token, so it never idles past Okta's 30-day limit.
+1. Zip `platform\Policy-OktaApiTokenAccount.ini` + `.xml` at the archive root → import → activate → restart the CPM.
+   The INI carries `OktaObjectType=ApiToken`, which switches the DLL to the token-account logic.
+2. Move the token account to *Okta API Token Account - NET plugin* (Edit > Platform). No linked accounts.
+3. **Verify** → RC 0 "Okta API token verified - owner svc-cyberark@lab.test (keep-alive ...)". Periodic verify is on
+   (7 days) so the token never idles past Okta's 30-day limit.
+4. **Rotate** = Change > *specify next password*: create the new token in the Okta Admin Console as the same
+   administrator, paste it. The plugin proves the new token, checks the owner matches, revokes the old token and
+   returns 0; the CPM vaults the new value. A periodic/random Change is refused with 8451 and changes nothing;
+   Reconcile is refused with 8452.
+5. Invoker test template: `tools\oktaapitoken-account-test.ini`.
+
+## 9. Operations
+
+- **Token rotation**: create a new token as the service admin → PVWA Change > specify next password on the token
+  account (the plugin validates it and revokes the old one) → Verify a managed account.
+- **Keep-alive**: periodic Verify on the token account (and every managed-account task) uses the token, so it never
+  idles past Okta's 30-day limit.
 - **Debug=No** after the rollout. The plugin never logs secrets in either mode.

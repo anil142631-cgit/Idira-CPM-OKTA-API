@@ -28,8 +28,11 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
         public const int CHANGE_REJECTED = 8414;      // E0000014: new password violates the Okta password policy
         public const int USER_NOT_MANAGEABLE = 8420;  // not ACTIVE or not Okta-sourced
         public const int RATE_LIMITED = 8429;         // Okta API rate limit
-        public const int KEY_FORMAT_ERROR = 8450;     // vaulted secret is not a usable private JWK
+        public const int KEY_FORMAT_ERROR = 8450;     // vaulted secret is not a usable Okta API token
         public const int MISSING_PARAMETER = 8460;    // account / platform property missing
+        public const int TOKEN_CHANGE_REFUSED = 8451; // token account: the new value is not an Okta API token (CPM-generated values cannot be tokens)
+        public const int TOKEN_RECONCILE_NA = 8452;   // token account: reconcile is impossible (Okta cannot create tokens by API)
+        public const int TOKEN_OWNER_MISMATCH = 8453; // token account: the new token belongs to a different Okta user than the current one
         public const int GENERAL_ERROR = 8999;
     }
 

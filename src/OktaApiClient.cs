@@ -90,6 +90,36 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
         // Users API
         // ------------------------------------------------------------------------------------------
 
+        /// <summary>The Okta user that owns the API token (GET /api/v1/users/me). Proves the token is valid.</summary>
+        public OktaUser WhoAmI(string authorization)
+        {
+            string url = _baseUrl + "/api/v1/users/me";
+            HttpResponseMessage resp = Send(() => _http.SendAsync(Request(HttpMethod.Get, url, authorization, null)));
+            string body = ReadBody(resp);
+            if ((int)resp.StatusCode == 401)
+                throw new OktaException(OktaRc.UNAUTHORIZED, "Okta rejected the API token (401): it is revoked, expired or not a token of this org.");
+            EnsureSuccess(resp, body, "token owner", "identify the owner of");
+            Dictionary<string, object> u = ParseObject(body);
+            Dictionary<string, object> profile = Obj(u, "profile");
+            var user = new OktaUser { Id = Str(u, "id"), Status = Str(u, "status"), Login = profile != null ? Str(profile, "login") : null };
+            _log("API token valid - owner " + user.Login + " id=" + user.Id + " status=" + user.Status);
+            return user;
+        }
+
+        /// <summary>Revokes the API token used for the call itself (DELETE /api/v1/api-tokens/current).</summary>
+        public void RevokeCurrentToken(string authorization)
+        {
+            string url = _baseUrl + "/api/v1/api-tokens/current";
+            HttpResponseMessage resp = Send(() => _http.SendAsync(Request(HttpMethod.Delete, url, authorization, null)));
+            string body = ReadBody(resp);
+            if (resp.IsSuccessStatusCode || (int)resp.StatusCode == 404)
+            {
+                _log("Previous API token revoked (HTTP " + (int)resp.StatusCode + ")");
+                return;
+            }
+            EnsureSuccess(resp, body, "API token", "revoke");
+        }
+
         public OktaUser GetUser(string accessToken, string login)
         {
             string url = _baseUrl + "/api/v1/users/" + Uri.EscapeDataString(login);

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device Name="Application">
+  <Policies>
+    <Policy ID="OktaApiTokenAccount">
+      <Properties>
+        <Required>
+          <Property Name="Address" />
+          <Property Name="Username" />
+        </Required>
+        <Optional>
+          <Property Name="Description" />
+        </Optional>
+      </Properties>
+      <LinkedPasswords />
+      <ConnectionComponents />
+    </Policy>
+  </Policies>
+</Device>

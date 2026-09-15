@@ -12,6 +12,11 @@ The CPM authenticates to Okta with an **Okta API token** held in the Vault as a 
 Users API. The plugin is a compiled **.NET SDK plugin** (`OktaApiTokenPlugin.dll`) built on the CyberArk Credentials
 Management .NET SDK — no Terminal Plugin, no REST framework, no Visual Studio.
 
+The same DLL also manages the **API token account itself** (a second platform with `OktaObjectType=ApiToken`):
+Verify keeps the token alive and proves it; Change through *specify next password* validates the new token, revokes
+the old one in Okta and vaults the new value; impossible operations are refused safely (Okta cannot create tokens
+by API).
+
 Proven end to end from PVWA on the lab (Verify, Change, Reconcile, logon, prereconcile — all RC 0).
 
 ---
@@ -48,17 +53,19 @@ account automatically.
 
 ```
 src/
-  Actions.cs         the five action classes the invoker discovers by ActionName
-  BaseAction.cs      accounts, platform settings, secret retrieval, credential-account lookup, error mapping
-  OktaApiClient.cs   HTTP client: SSWS authorization, Users API calls, Okta error -> CPM return code
-  OktaRc.cs          return codes and OktaException
-  AssemblyInfo.cs    assembly identity 1.0.0.0
-build.ps1            builds OktaApiTokenPlugin.dll with csc.exe on the CPM server
+  Actions.cs              the five action classes the invoker discovers by ActionName (route to users or token logic)
+  BaseAction.cs           accounts, platform settings, secret retrieval, credential-account lookup, error mapping
+  OktaApiClient.cs        HTTP client: SSWS authorization, Users API calls, token owner lookup, token revocation
+  TokenAccountActions.cs  token-account platform: verify (keep-alive), change via specify next password, refusals
+  OktaRc.cs               return codes and OktaException
+  AssemblyInfo.cs         assembly identity 1.0.0.0
+build.ps1                 builds OktaApiTokenPlugin.dll with csc.exe on the CPM server
 platform/
-  Policy-OktaUsersApiToken.ini   platform definition (PolicyID OktaUsersApiToken)
-  Policy-OktaUsersApiToken.xml   properties (Address, Username) and linked-account slots
+  Policy-OktaUsersApiToken.ini / .xml     managed Okta accounts (PolicyID OktaUsersApiToken)
+  Policy-OktaApiTokenAccount.ini / .xml   the token account itself (PolicyID OktaApiTokenAccount, OktaObjectType=ApiToken)
 tools/
-  oktaapitoken-test.ini          parameters template for CANetPluginInvoker tests
+  oktaapitoken-test.ini            parameters template for invoker tests - users platform
+  oktaapitoken-account-test.ini    parameters template for invoker tests - token-account platform
 docs/
   BUILD-AND-DEPLOY.md            step-by-step: Okta, build, deploy, invoker test, platform, vault, PVWA tests
   lab-evidence/                  plugin log of the successful PVWA run
@@ -108,6 +115,18 @@ exit code = 0   Message = Okta user anil142631@gmail.com verified (password acce
 
 Full log: `docs/lab-evidence/plugin-log-2026-09-18.log`.
 
+## The token account platform
+
+| CPM action | What the plugin does | Result |
+|---|---|---|
+| Verify (periodic, every 7 days) | `GET /api/v1/users/me` with the vaulted token | RC 0 — proves the token and resets Okta's 30-day inactivity expiry |
+| Change → *specify next password* | Proves the new token, checks it belongs to the same administrator, revokes the old token (`DELETE /api/v1/api-tokens/current`) | RC 0 — the CPM vaults the new token |
+| Change (periodic or CPM-generated) | Refused — a generated password can never be an Okta token | 8451, nothing changes |
+| Reconcile | Refused — Okta has no API to create a token | 8452 |
+
+Rotation therefore needs one human act (creating the new token in the Admin Console); everything else — validation,
+keep-alive, revoking the old token, storing the new one — is the CPM.
+
 ## Return codes
 
 | Code | Meaning |
@@ -122,6 +141,9 @@ Full log: `docs/lab-evidence/plugin-log-2026-09-18.log`.
 | 8429 | Okta rate limit |
 | 8450 | Credential secret empty or not an Okta API token |
 | 8460 | Required parameter missing |
+| 8451 | Token account: the new value is not an Okta API token (use specify next password) |
+| 8452 | Token account: reconcile impossible |
+| 8453 | Token account: the new token belongs to a different administrator |
 | 8000 | Okta org unreachable |
 | 8999 | Unexpected error — detail in the message |
 
@@ -132,9 +154,9 @@ Full log: `docs/lab-evidence/plugin-log-2026-09-18.log`.
   while invoker tests pass. Compare with `Get-FileHash` first.
 - **Platform import.** Files at the zip root; use an XML that PVWA itself exported (change only `Policy ID`) if a
   hand-written one is rejected; the platform name may contain only letters, numbers, spaces and hyphens.
-- **The API token cannot be rotated by API.** Okta has no create/rotate endpoint for API tokens (`POST
-  /api/v1/api-tokens` → 405). Rotation is a short manual step (create → update in PVWA → verify → revoke old).
-  Periodic Verify keeps the token in use so it doesn't expire through inactivity.
+- **The API token cannot be created or rotated by API.** Okta has no such endpoint (`POST /api/v1/api-tokens` →
+  405). The token-account platform automates everything around that fact: keep-alive, validation of a new token
+  entered through *specify next password*, revocation of the old one, and safe refusal of impossible operations.
 
 ## Security notes
 

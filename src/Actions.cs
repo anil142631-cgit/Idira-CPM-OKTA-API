@@ -29,6 +29,7 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
             int rc = OktaRc.GENERAL_ERROR;
             try
             {
+                if (TokenAccountActions.IsTokenPlatform(this)) { rc = TokenAccountActions.Logon(this, ref platformOutput); return rc; }
                 OktaContext ctx = BuildContext("Logon");
                 using (OktaApiClient okta = CreateClient(ctx))
                 {
@@ -60,6 +61,7 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
             int rc = OktaRc.GENERAL_ERROR;
             try
             {
+                if (TokenAccountActions.IsTokenPlatform(this)) { rc = TokenAccountActions.Verify(this, ref platformOutput); return rc; }
                 OktaContext ctx = BuildContext("Logon");
                 using (OktaApiClient okta = CreateClient(ctx))
                 {
@@ -116,6 +118,7 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
             int rc = OktaRc.GENERAL_ERROR;
             try
             {
+                if (TokenAccountActions.IsTokenPlatform(this)) { rc = TokenAccountActions.Change(this, ref platformOutput); return rc; }
                 OktaContext ctx = BuildContext("Logon");
                 string oldPassword = ReadSecret(TargetAccount, false);
                 string newPassword = ReadSecret(TargetAccount, true);
@@ -154,6 +157,7 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
             int rc = OktaRc.GENERAL_ERROR;
             try
             {
+                if (TokenAccountActions.IsTokenPlatform(this)) { rc = TokenAccountActions.Prereconcile(this, ref platformOutput); return rc; }
                 OktaContext ctx = BuildContext("Reconcile");
                 using (OktaApiClient okta = CreateClient(ctx))
                 {
@@ -182,6 +186,7 @@ namespace CyberArk.Extensions.Plugin.OktaOAuth
             int rc = OktaRc.GENERAL_ERROR;
             try
             {
+                if (TokenAccountActions.IsTokenPlatform(this)) { rc = TokenAccountActions.Reconcile(this, ref platformOutput); return rc; }
                 OktaContext ctx = BuildContext("Reconcile");
                 string newPassword = ReadSecret(TargetAccount, true);
                 if (string.IsNullOrEmpty(newPassword))
