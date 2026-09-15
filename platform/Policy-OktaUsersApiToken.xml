@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device Name="Application">
+  <Policies>
+    <Policy ID="OktaUsersApiToken">
+      <Properties>
+        <Required>
+          <Property Name="Address" />
+          <Property Name="Username" />
+        </Required>
+        <Optional>
+          <Property Name="Description" />
+        </Optional>
+      </Properties>
+      <LinkedPasswords>
+        <Link Name="LogonAccount" DisplayName="Logon account (Okta API token)" PropertyIndex="1" />
+        <Link Name="ReconcileAccount" DisplayName="Reconcile account (Okta API token)" PropertyIndex="3" />
+      </LinkedPasswords>
+      <ConnectionComponents />
+    </Policy>
+  </Policies>
+</Device>

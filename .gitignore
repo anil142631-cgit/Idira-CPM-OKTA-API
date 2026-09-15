@@ -1,0 +1,11 @@
+# never commit secrets or build output
+*.dll
+*.pdb
+bin/
+obj/
+.vs/
+*.log.local
+# filled test parameters (the template in tools/ is committed)
+**/bin/oktaapitoken-test.ini
+*-filled.ini
+~$*

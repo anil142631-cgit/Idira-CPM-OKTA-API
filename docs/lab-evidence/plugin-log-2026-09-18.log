@@ -1,0 +1,48 @@
+# Plugin log excerpt - OktaApiTokenPlugin.dll - PVWA run of 18 September 2026 (lab)
+# Source: Logs\ThirdParty\Debug_OktaUsersApiToken-...log on the CPM. Loaded SDK: CyberArk.Extensions.Plugins.Models 20.0.7.28, CyberArk.Extensions.Utilties 20.0.0.3
+# Author: Anilkumar Dadi | Anilkumar.Dadi@cyderes.com | Cyderes
+
+18/09/2026 02:08:50.650 | Info -> PluginsRunner :: RunPlugin -> About to perform: 'verifypass' action
+18/09/2026 02:08:50.665 | Info -> Verify :: run -> START
+18/09/2026 02:08:50.665 | Info -> BaseAction :: PickCredentialAccount -> Linked accounts -> LogOnAccount=index=1 username=svc-cyberark@lab.test Extrapass2Account=null ReconcileAccount=index=3 username=svc-cyberark@lab.test
+18/09/2026 02:08:50.665 | Info -> ParametersManager :: GetMandatoryParameter -> Parameter address = integrator-3537434.okta.com.
+18/09/2026 02:08:50.665 | Info -> ParametersManager :: GetMandatoryParameter -> Parameter username = anil142631@gmail.com.
+18/09/2026 02:08:50.665 | Info -> ParametersManager :: GetMandatoryParameter -> Parameter username = svc-cyberark@lab.test.
+18/09/2026 02:08:50.696 | Info -> BaseAction :: BuildContext -> Okta org=integrator-3537434.okta.com target=anil142631@gmail.com credential=API token (SSWS) owner svc-cyberark@lab.test credential role=Logon
+18/09/2026 02:08:50.962 | Info -> BaseAction :: <CreateClient>b__1 -> Credential is an Okta API token (SSWS) - calling the Users API with it directly
+18/09/2026 02:08:52.399 | Info -> BaseAction :: <CreateClient>b__1 -> User anil142631@gmail.com id=00u17e3bkdp6DkmGr698 status=ACTIVE provider=OKTA
+18/09/2026 02:08:53.165 | Info -> BaseAction :: <CreateClient>b__1 -> Primary authentication for anil142631@gmail.com returned status SUCCESS
+18/09/2026 02:08:53.165 | Info -> Verify :: run -> END
+18/09/2026 02:08:53.165 | Info -> q :: c -> exit code = 0
+18/09/2026 02:08:53.165 | Info -> q :: c -> Message = Okta user anil142631@gmail.com verified (password accepted by Okta).
+
+18/09/2026 02:09:07.478 | Info -> PluginsRunner :: RunPlugin -> About to perform: 'logon' action
+18/09/2026 02:09:07.478 | Info -> Logon :: run -> START
+18/09/2026 02:09:07.525 | Info -> BaseAction :: BuildContext -> Okta org=integrator-3537434.okta.com target=anil142631@gmail.com credential=API token (SSWS) owner svc-cyberark@lab.test credential role=Logon
+18/09/2026 02:09:07.665 | Info -> BaseAction :: <CreateClient>b__1 -> Credential is an Okta API token (SSWS) - calling the Users API with it directly
+18/09/2026 02:09:07.665 | Info -> Logon :: run -> END
+18/09/2026 02:09:07.665 | Info -> q :: c -> exit code = 0
+
+18/09/2026 02:09:08.072 | Info -> PluginsRunner :: RunPlugin -> About to perform: 'changepass' action
+18/09/2026 02:09:08.072 | Info -> Change :: run -> START
+18/09/2026 02:09:08.119 | Info -> BaseAction :: BuildContext -> Okta org=integrator-3537434.okta.com target=anil142631@gmail.com credential=API token (SSWS) owner svc-cyberark@lab.test credential role=Logon
+18/09/2026 02:09:08.259 | Info -> BaseAction :: <CreateClient>b__1 -> Credential is an Okta API token (SSWS) - calling the Users API with it directly
+18/09/2026 02:09:09.415 | Info -> BaseAction :: <CreateClient>b__1 -> User anil142631@gmail.com id=00u17e3bkdp6DkmGr698 status=ACTIVE provider=OKTA
+18/09/2026 02:09:10.525 | Info -> Change :: run -> END
+18/09/2026 02:09:10.525 | Info -> q :: c -> exit code = 0
+18/09/2026 02:09:10.525 | Info -> q :: c -> Message = Password changed for anil142631@gmail.com (sessions revoked).
+
+18/09/2026 02:09:22.290 | Info -> PluginsRunner :: RunPlugin -> About to perform: 'prereconcilepass' action
+18/09/2026 02:09:22.290 | Info -> Prereconcile :: run -> START
+18/09/2026 02:09:22.322 | Info -> BaseAction :: BuildContext -> Okta org=integrator-3537434.okta.com target=anil142631@gmail.com credential=API token (SSWS) owner svc-cyberark@lab.test credential role=Reconcile
+18/09/2026 02:09:22.462 | Info -> Prereconcile :: run -> END
+18/09/2026 02:09:22.462 | Info -> q :: c -> exit code = 0
+
+18/09/2026 02:09:22.744 | Info -> PluginsRunner :: RunPlugin -> About to perform: 'reconcilepass' action
+18/09/2026 02:09:22.744 | Info -> Reconcile :: run -> START
+18/09/2026 02:09:22.791 | Info -> BaseAction :: BuildContext -> Okta org=integrator-3537434.okta.com target=anil142631@gmail.com credential=API token (SSWS) owner svc-cyberark@lab.test credential role=Reconcile
+18/09/2026 02:09:22.931 | Info -> BaseAction :: <CreateClient>b__1 -> Credential is an Okta API token (SSWS) - calling the Users API with it directly
+18/09/2026 02:09:24.103 | Info -> BaseAction :: <CreateClient>b__1 -> User anil142631@gmail.com id=00u17e3bkdp6DkmGr698 status=ACTIVE provider=OKTA
+18/09/2026 02:09:24.775 | Info -> Reconcile :: run -> END
+18/09/2026 02:09:24.775 | Info -> q :: c -> exit code = 0
+18/09/2026 02:09:24.775 | Info -> q :: c -> Message = Password reconciled (admin-set) for anil142631@gmail.com.
